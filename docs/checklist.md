@@ -1371,3 +1371,49 @@ outage; a live run reached 43 of 61), **B5** (persistence + progress, was C7),
   require an uncommitted Audiveris export. Full scan recognition was not verified
   on this Mac. B5/F3 persistence and F4 note-level edit contracts remain absent.
 - This final branch is local only, as requested. No remote merge or push.
+
+
+## D1 — Vercel production deployment
+- [x] Deployed. The user asked for the deployment on 2026-09-13.
+- Code: JacenL's `3639f6b`, `5505357` and `c7448f4` (root entrypoint shim,
+  Python 3.14 pin, `.vercelignore`, temp-directory work dir on a read-only tree,
+  inline analysis on serverless hosts). No application code changed in D1.
+- Project `happy-19f5/chordially`; production https://chordially-azure.vercel.app;
+  deployment `dpl_9qtuzj1gZR8ZanhikjoGRoaWUJzL`, built from `c7448f4` with
+  `vercel deploy --prod`. `vercel link` connected the GitHub repository, so `main`
+  is the production branch and other branches build previews.
+- Pre-deploy validation on `c7448f4`: `python -m pytest tests/unit
+  tests/integration -q` → 344 passed, 1 deselected. With `VERCEL=1` in a
+  TestClient, `/` and `/score/example` returned 200 and a MusicXML upload finished
+  inside the request and opened its score page.
+- Live validation with curl against the production URL:
+  - `/`, `/score/example`, `/static/app.css` and
+    `/fixtures/pages/wohlfahrt-p3.png` → 200.
+  - MusicXML upload (`mozart-k156-mvt1.mxl`) → job `done` in 2.9s; three job
+    polls, the score page, the generated `/uploads/pages/<id>.svg` and
+    `/api/practice/<score>/<phrase>` → 200.
+  - Scan upload (`wohlfahrt-op45-bk1-p3.pdf`) → job `failed` with the
+    Audiveris-unavailable message and recovery action, not a traceback.
+  - 5 MB upload → no HTTP response at all (curl status 000).
+  - Build log: Python 3.14 from `.python-version`, uv 0.10.11, bundle
+    **466.98 MB against the 500 MB limit**.
+  - Not verified: the live site in a real browser, and behaviour when requests
+    land on more than one function instance.
+- Known limitations on Vercel:
+  - Scans are not read. Audiveris is not installed there, and no
+    `PRACTICEMAP_ANTHROPIC_API_KEY` is set, so the vision engine is off too.
+    Setting one would bill every public upload to that account; left for the
+    user to decide.
+  - Uploads above 4.5 MB fail without the app's size message or recovery action.
+  - Uploaded analyses and phrase edits live in one instance's memory. The test
+    polls reached the same instance; nothing guarantees that.
+  - The missing-Audiveris recovery text tells a site visitor to install it,
+    which is developer advice.
+  - About 33 MB of bundle headroom; a new heavy dependency may not fit.
+- Local side effects of the CLI: `.vercel/` (ignored) and `.env.local` holding a
+  `VERCEL_OIDC_TOKEN` (ignored by `.env.*`, excluded by `.vercelignore`). It also
+  appended `.vercel` and `.env*` to `.gitignore`; that edit was reverted, since
+  both were already covered and a trailing `.env*` would re-ignore
+  `.env.example`.
+- Delivery: this entry and the README, architecture and safe-execution updates
+  are ready to commit and push to `practice-map-build`.

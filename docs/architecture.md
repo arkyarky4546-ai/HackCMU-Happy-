@@ -282,3 +282,26 @@ Consequences worth recording:
 * **The ribbon still cannot drift.** Bands are flush by the same construction as
   before — a band ends where the next band's first measure starts — so grouping
   changed what a band means without changing the geometry guarantee.
+
+### 2026-09-13 — Hosting: one Vercel Python function
+Production runs on Vercel's FastAPI preset as a single Python function, at the
+user's request. The pure-Python stack deploys with no build step: a root
+`main.py` re-exports the app, `.python-version` selects 3.14, and
+`src.config.resolve_work_dir` falls back to the temp directory because the code
+is mounted read-only.
+
+Consequences, measured on the first deploy rather than assumed:
+
+* **The bundle is 467 MB of a 500 MB limit.** OpenCV, music21 and PyMuPDF are
+  most of it. A new heavy dependency may not fit.
+* **No scan recognition.** Audiveris is a Java application and the Python
+  runtime cannot run it, so a scan upload fails with its recovery action.
+  MusicXML import and the example score are unaffected.
+* **Instances are stateless.** Background threads get CPU only while a request
+  is in flight, so analysis runs inside the upload request there
+  (`jobs.run_inline`). Uploaded bundles and edits are still per-instance memory.
+* **Request bodies are capped at 4.5 MB** by the platform, against the app's
+  disclosed 20 MB.
+
+A host running one long-lived container would lift the last three. Not pursued:
+the deployment brief was Vercel.

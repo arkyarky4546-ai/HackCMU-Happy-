@@ -182,6 +182,22 @@ needed only for the legacy vision scan path and for re-reading the example scan
 from source. The app reads only that variable and deliberately ignores an
 ambient `ANTHROPIC_API_KEY`.
 
+### Deployment
+Production runs on Vercel at https://chordially-azure.vercel.app (project
+`happy-19f5/chordially`). The GitHub repository is connected: a push to `main`
+redeploys production, and a push to any other branch builds a preview. Vercel
+runs the app as one Python function — `main.py` re-exports `src.app.main:app`,
+`.python-version` pins 3.14, `.vercelignore` keeps tests and docs out of the
+bundle, and generated files go to the temp directory because the code is
+mounted read-only. To deploy by hand: `vercel deploy --prod` from the repository
+root (needs Node and `vercel login`).
+
+What differs from a local run: scans cannot be read there (Audiveris is not
+installed and no Anthropic key is configured); Vercel refuses request bodies
+above 4.5 MB before the app sees them; and an uploaded analysis lives in one
+function instance's memory, so its score link can stop working when that
+instance is recycled. The example score and MusicXML import work.
+
 ## Why CLAUDE.md is focused
 It contains substantial persistent instructions while detailed specifications live in dedicated documents. Even in a single long session, instructions compete with source files, tool results, and conversation context. Claude Code guidance recommends concise project memory; referenced files are read when relevant, whereas imports load their content at startup.
 
