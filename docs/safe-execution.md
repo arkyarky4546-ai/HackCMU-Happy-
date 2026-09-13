@@ -6,6 +6,8 @@ Preferred working branch: practice-map-build.
 
 After plan approval, every completed task/checkpoint must be committed and pushed here. The repository URL is already authorized. This does not authorize merging into the default branch, changing repository visibility/settings, deleting branches, public deployment, or purchasing services.
 
+Public deployment exception, 2026-09-13: the user asked for a Vercel deployment. It is live as project `happy-19f5/chordially`, with the GitHub repository connected and `main` as its production branch — so a push to `main` is now also a public deploy. This does not extend to other hosts, custom domains, paid plans, or adding secrets to the Vercel project.
+
 These instructions guide the agent; they do not override tool permissions or GitHub protections. Keep normal permission controls enabled. Do not request blanket bypass mode to make a long run easier.
 
 ## Two-developer workflow
