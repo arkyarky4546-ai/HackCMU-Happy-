@@ -10,7 +10,7 @@ phrase with the one after it. Boundaries inside a measure are supported by the
 data model — anchors carry a note index — but not yet by this interface, and
 saying that plainly is better than implying otherwise.
 
-The invariant every edit preserves, stated in CLAUDE.md and enforced by tests:
+The invariant every edit preserves, enforced by tests:
 structural phrase coverage tiles the analyzable music with no gaps and no
 duplicate ownership. Practice ranges may overlap; structural ranges may not.
 A phrase list is therefore always rebuilt from a partition of measure indices

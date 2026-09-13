@@ -2,7 +2,7 @@
 
 This is not persistence and must not be described as such. An edited phrase list
 survives navigation and reload; it does not survive restarting the server. That
-limitation is real, it is recorded in docs/demo.md, and the honest place to say
+limitation is real, and the honest place to say
 it is here, next to the dictionary that is the whole implementation.
 
 An edit is seeded by deep-copying the source analysis, so editing the example

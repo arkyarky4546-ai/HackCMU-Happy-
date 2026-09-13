@@ -1,4 +1,4 @@
-"""Difficulty-to-colour mapping, exactly as specified in docs/design.md.
+"""Difficulty-to-colour mapping for the 0.0–10.0 rating scale.
 
 The progression is light green -> yellow -> orange -> red -> near-black, evenly
 spaced at 2.5 points. Values between anchors are interpolated linearly in sRGB.
@@ -15,7 +15,7 @@ The scale is absolute and identical for every score. A beginner etude occupies
 the light-green end and stays there; nothing is stretched to make one piece use
 the whole ribbon.
 
-Category labels come from docs/product-spec.md and use half-open intervals, so
+Category labels use half-open intervals, so
 a score of exactly 2.0 is "Advanced Beginner", not "Beginner-friendly". The
 final interval is closed so 10.0 has a home.
 

@@ -2,7 +2,7 @@
 
 These are the boundary types for anything a model produces. Nothing downstream
 accepts raw provider output: it is parsed into these, checked, and only then
-used. docs/architecture.md calls for exactly this -- validate external
+used. The rule is to validate external
 recognition and LLM output at the boundary, and keep missing values explicit
 rather than collapsing them to zero.
 
@@ -21,7 +21,7 @@ from pydantic import BaseModel, Field, ValidationError, field_validator
 
 # Note value names, mapped to a fraction of a whole note. Kept as an explicit
 # table because the model returns names, and Python -- not the model -- does the
-# arithmetic (CLAUDE.md: use exact code for timing arithmetic).
+# arithmetic, exactly.
 NOTE_VALUE_FRACTIONS: dict[str, Fraction] = {
     "whole": Fraction(1, 1),
     "half": Fraction(1, 2),

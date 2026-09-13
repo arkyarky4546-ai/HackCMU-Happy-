@@ -1,6 +1,6 @@
 """Rubric, colour mapping and aggregation invariants.
 
-The boundary cases here are the ones docs/safe-execution.md names explicitly as
+The boundary cases here are the ones treated as
 quality gates: the six anchor values, the category edges, and missing data.
 """
 
@@ -37,7 +37,7 @@ def n(step: str, octave: int, value: str = "eighth", **kw) -> NoteEvent:
 
 @pytest.mark.parametrize("score,expected_hex", ANCHORS)
 def test_anchor_values_reproduce_exactly(score, expected_hex):
-    """Every anchor in docs/design.md must come back byte-identical."""
+    """Every colour anchor must come back byte-identical."""
     assert color_for(score).upper() == expected_hex.upper()
 
 

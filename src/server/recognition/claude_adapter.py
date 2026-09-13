@@ -1,6 +1,6 @@
 """The only module in this codebase that talks to a model provider.
 
-Isolated on purpose (docs/architecture.md: separate provider adapters from
+Isolated on purpose (provider adapters stay separate from
 domain analysis so recognition can be replaced without rewriting the UI).
 
 Two rules are enforced here rather than assumed:
@@ -38,7 +38,7 @@ MAX_TOKENS = 8000
 # than a single measure -- and thinking shares this budget.
 MAX_TOKENS_SYSTEM = 32000
 
-# Bounded, as docs/safe-execution.md requires: finite timeouts and retry counts,
+# Bounded on purpose: finite timeouts and retry counts,
 # never an unbounded loop against a failing provider.
 REQUEST_TIMEOUT_S = 90.0
 MAX_RETRIES = 2

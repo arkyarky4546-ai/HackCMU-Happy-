@@ -40,8 +40,8 @@ to make the ribbon look richer. The legend renders the full 0–10 scale with al
 five category labels regardless of what the loaded score actually spans.
 
 Under rubric 1.0 the same page rated 1.0–6.8, with Etude 2 averaging 4.0 —
-"Competent level" for a first-position eighth-note study. `docs/architecture.md`
-records the seven counting errors behind that and what each one is now.
+"Competent level" for a first-position eighth-note study. Rubric 2.0 fixed the
+seven counting errors behind that.
 
 ## scores/mozart-k156-mvt1.mxl
 

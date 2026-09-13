@@ -12,8 +12,6 @@ uploads/
 tmp/
 tests/
 docs/
-prompts/
-agent-tools/
 scripts/
 requirements-dev.txt
 playwright-report/

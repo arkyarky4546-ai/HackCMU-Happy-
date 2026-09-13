@@ -2,8 +2,6 @@
 .env
 .env.*
 !.env.example
-CLAUDE.local.md
-.claude/settings.local.json
 
 # Dependencies and build output; adapt to selected stack
 node_modules/

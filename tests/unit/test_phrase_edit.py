@@ -1,6 +1,6 @@
 """Phrase editing: the invariants an edit must never break.
 
-CLAUDE.md names these explicitly, and they are the reason edits rebuild the
+These invariants are the reason edits rebuild the
 phrase list from a partition of measure indices rather than patching two phrases
 in place. Patching is how a gap gets introduced, and a gap means some measure of
 the piece belongs to no phrase at all — which the user would only discover by

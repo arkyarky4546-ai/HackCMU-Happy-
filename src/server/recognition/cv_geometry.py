@@ -1,6 +1,6 @@
 """Measure geometry from a scanned page, using classical computer vision.
 
-This module answers the hardest question in docs/architecture.md: how actual
+This module answers the hardest question in the pipeline: how actual
 measure positions are obtained rather than estimated by a language model. It
 never calls a model. It reads ink.
 

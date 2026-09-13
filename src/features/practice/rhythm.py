@@ -1,7 +1,7 @@
 """Complementary rhythm variation, computed exactly and refused when unsafe.
 
-The transformation is the one described in S01 and spelled out in
-docs/music-pedagogy.md: take a run of equal notes and alternately lengthen and
+The transformation is the one described in source S01: take a run of equal
+notes and alternately lengthen and
 shorten consecutive pairs, then reverse the pattern. The point is that each pair
 still occupies exactly the time it occupies on the page, so the beat does not
 move and the exercise can be played against the rest of the phrase.

@@ -1,6 +1,6 @@
 """Practice instruction: what it must never do.
 
-The musical invariants in CLAUDE.md and docs/music-pedagogy.md are mostly
+The product's musical invariants are mostly
 prohibitions, so most of these tests assert a refusal. A rhythm variation that
 quietly changed a passage's total duration, or that was offered on a passage of
 tied notes, would be worse than no exercise at all.
@@ -58,7 +58,7 @@ def test_long_short_and_short_long_are_complementary():
 
 
 def test_pairing_uses_a_dotted_note_and_its_half():
-    """The exact pattern docs/music-pedagogy.md describes for a verified pair."""
+    """The exact dotted pattern the technique describes for a verified pair."""
     long_short = rhythm.variants(run_of(4, "16th"))[0]
     first, second = long_short.notes[0], long_short.notes[1]
     assert (first.value, first.dots) == ("16th", 1)

@@ -174,11 +174,11 @@ def test_the_sample_is_reported_honestly(bundle):
 
     This asserts the imbalance rather than hiding it: if the second study ever
     gains enough rated measures for the comparison to be strong, this test fails
-    and the honest caveat in docs/demo.md should be revised upward.
+    and the honest small-sample caveat should be revised upward.
     """
     _, _, n_first, n_second = study_means(bundle, None)
     assert n_second < n_first, (
         "the second study now has as many rated measures as the first; the "
-        "'small sample' caveat in docs/demo.md and this test's docstring are "
+        "'small sample' caveat in the README and this test's docstring are "
         "out of date and should be strengthened"
     )

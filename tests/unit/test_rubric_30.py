@@ -2,8 +2,7 @@
 
 Each test is written against notation, not against the constants, so the
 weights can be retuned without these quietly passing for the wrong reason.
-The anchor tests pin the scale to graded-syllabus descriptions (see
-docs/music-pedagogy.md, "Difficulty rubric anchors").
+The anchor tests pin the scale to graded-syllabus descriptions.
 """
 
 from __future__ import annotations

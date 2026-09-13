@@ -5,7 +5,7 @@ passage is to play, under a stated tempo, from features that are actually
 visible in the notation.
 
 What it is not: a measurement of anyone's proficiency, and not a validated
-examination grade. docs/music-pedagogy.md is explicit that no source here
+examination grade. No source cited here
 establishes a numeric scale; the sources support individual practice techniques,
 not this number. The one decimal place is for ordering and comparison, not a
 claim of precision.
@@ -88,7 +88,7 @@ The tempo the rubric assumed was also wrong for most exported files, which is
 fixed at the source in `musicxml_source.read_tempo` rather than here.
 
 Nothing here is a validated grade. Anchors for the categories are the level
-descriptions of graded string syllabi, cited in docs/music-pedagogy.md; the
+descriptions of graded string syllabi; the
 tests in tests/unit/test_rubric_30.py pin constructed measures to the bands
 those descriptions imply.
 """
@@ -697,7 +697,7 @@ def rate_measure(
 
 # Aggregation weights for a phrase or section rating. Biased toward the peak so
 # a single demanding measure inside an otherwise easy span is not averaged into
-# invisibility -- docs/product-spec.md requires exactly this.
+# invisibility.
 PHRASE_MEAN_WEIGHT = 0.6
 PHRASE_PEAK_WEIGHT = 0.4
 
@@ -835,7 +835,7 @@ def rubric_explanation(tempo_bpm: float, tempo_is_assumed: bool) -> dict:
         "review": (
             "No violinist has reviewed this scale. The category bands were "
             "calibrated against the published level descriptions of graded "
-            "string syllabi (see docs/music-pedagogy.md), which are "
+            "string syllabi, which are "
             "descriptions rather than measurements; the cut points remain "
             "Chordially's own choices, not a validated grading system. "
             "fixtures/expected/review-phrases.md is the packet a teacher would "

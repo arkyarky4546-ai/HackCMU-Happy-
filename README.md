@@ -1,188 +1,145 @@
 # Chordially
 
-Upload a page of printed violin sheet music. Chordially divides it into
-practice passages, rates each one from 0.0 to 10.0, colours the page passage by
-passage from light green to near-black, and tells you how to practise the one you
-select — including complementary rhythm variations built from that passage's
-own notes.
+Upload a page of printed violin sheet music. Chordially splits it into practice
+passages, rates each passage from 0.0 to 10.0, colors the page by difficulty
+from light green to near-black, and tells you how to practice the passage you
+select — including rhythm variations built from that passage's own notes.
 
-## Local final integration
+**Live demo:** https://chordially-azure.vercel.app — open the example score or
+import a MusicXML file. Reading scanned pages needs a local install; see
+[Hosted version](#hosted-version).
 
-Branch `final` combines all backend branches merged through `bcc68e8` with the
-frontend work. Use Python 3.13 (tested locally), install `requirements-dev.txt`,
-and run `python -m uvicorn src.app.main:app --reload`. The local virtual
-environment is `.venv313`.
+## What it does
 
-The frontend uses subtle measure highlights, an upload/status bar, and preserves
-sidebar position during selection. Scanned uploads are re-engraved and labelled.
-The home screen reports when Audiveris is missing. No Grok wrapper is included.
+- **Reads your music.** Upload a PDF, PNG or JPEG of one printed page, or import
+  MusicXML (`.musicxml`, `.xml`, `.mxl`). Scans are recognized locally with
+  Audiveris and shown re-engraved, and the page says so. MusicXML is read
+  exactly from the file and engraved with Verovio — on the first page of
+  Mozart's K. 156, all 145 measures are read and rated.
+- **Groups it into musical units.** Notes form phrases; adjacent phrases that ask
+  for the same kind of work form a practice passage, which splits where a
+  printed key or meter change, a real step in difficulty, or a change in the
+  main demand says the work has changed. Short trouble spots are marked inside a
+  phrase only where one genuinely stands out.
+- **Rates difficulty and shows its working.** Ratings come from features read off
+  the notation: note rate, fine subdivision, displaced accents, accidentals
+  outside the key, register above first position, wide leaps, double stops,
+  bowing demand, rhythmic complexity, key remoteness, and estimated string
+  crossings and position changes. Tempo comes from the printed mark or tempo
+  word, can be overridden, and changes every rating. The weights behind a rating
+  are shown beside it.
 
-Audiveris is **not installed in this Mac checkout**. Configure its executable via
-`PRACTICEMAP_AUDIVERIS_EXE` in `.env` after installing it. MusicXML and example
-mode work now. Progress persistence and note-level boundary editing remain
-unimplemented backend contracts; they are not claimed complete by this merge.
+  | Rating | Label |
+  |---|---|
+  | 0.0 – 1.9 | Beginner-friendly |
+  | 2.0 – 3.9 | Advanced Beginner |
+  | 4.0 – 5.9 | Competent level |
+  | 6.0 – 7.9 | Expert level |
+  | 8.0 – 10.0 | Extremely hard |
 
-## Quick start
+- **Colors the page.** Each passage is highlighted in its difficulty color, on a
+  scale running light green → yellow → orange → red → near-black. Measures that
+  could not be read stay hatched and unrated — never shown as easy.
+- **Teaches the passage you pick.** Click anywhere in a passage to select it. The
+  sidebar explains what makes it hard and offers exercises chosen from what the
+  notation shows — complementary rhythms (computed exactly, so every variant
+  lasts as long as the written notes), counting the subdivision, slow practice
+  with one stated goal, looping the hard join, and more. Each exercise says how
+  to do it, what to listen for, and how to return to the music, and cites
+  whether its support is teaching practice, research, or a heuristic.
+- **Lets you disagree.** Split or merge phrases and passages; ratings and advice
+  follow the change.
+
+## Limits
+
+- Ratings are heuristic estimates, not measured proficiency or validated
+  examination grades. On the bundled Wohlfahrt page they agree with the order
+  Wohlfahrt published his studies in, at 60, 90 and 160 BPM — but that is one
+  pair of studies on one page, and the harder study has only a small sample of
+  readable measures.
+- Recognition checks that each measure's durations add up to the meter and that
+  its notes are in the violin's range. It does not verify pitch.
+- Fingerings, string choices and shifts are never stated as fact when the
+  notation does not print them.
+- One page per upload. Phrase boundaries can be placed only at barlines.
+- Practice progress and settings are not saved, and an analysis lasts only as
+  long as the server process.
+
+## Hosted version
+
+The live demo runs on Vercel; pushes to `main` deploy it. It differs from a
+local run in three ways:
+
+- Scanned pages cannot be read there, because Audiveris is a Java application
+  and is not installed. The upload says so. The example score and MusicXML
+  import work.
+- Vercel refuses uploads larger than 4.5 MB.
+- An uploaded analysis lives in one server instance's memory, so its link can
+  stop working later.
+
+## Run it locally
+
+Python 3.14.
 
 ```bash
 pip install -r requirements-dev.txt
-python -m uvicorn src.app.main:app --reload
+python -m uvicorn src.app.main:app --reload       # http://127.0.0.1:8000
 ```
 
-Open http://127.0.0.1:8000. Nothing needs an API key: MusicXML is parsed
-locally and a scanned page is recognized locally by Audiveris. See
-**Reading scans** below for the one extra install that needs.
-
-`docs/demo.md` is the demo script, with measured timings and an honest list of
-limitations. `docs/checklist.md` is the delivery status.
-
-## What works
-
-- Upload a PDF, PNG or JPEG of one printed page and analyze that actual file.
-  Audiveris recognizes it on this machine — no API key, no network call, no
-  credit balance, and the same page gives the same answer every time. Measured
-  on the demo page: 14.8s, 56 measures, 51 rated, nine practice passages. The
-  page shown is re-engraved from what was read, which the source line says.
-- Or import MusicXML (`.musicxml`, `.xml`, `.mxl`), which is read exactly from
-  the file — engraved with Verovio, no recognition step, and no measure left
-  unrated. Measured on Mozart K.156: 145 of 145 measures rated.
-- The committed example is the other route: a real scan with OpenCV-measured
-  geometry, annotated over the original page image. All geometry is exact code,
-  so overlays sit on the real measures and survive zoom and resize.
-- A continuous per-system difficulty ribbon banded by practice passage rather
-  than by measure, whose widths follow the real engraved barlines, with the five
-  colour anchors from `docs/design.md`. One passage carries one rating and one
-  colour everywhere it appears, including across a line break.
-- Clicking anywhere inside a passage — a measure, its outline, or its ribbon
-  band — selects the whole passage and loads its guidance. Phrases and local
-  hard spots are secondary detail inside it.
-- Measures that could not be read stay unrated and hatched, visually distinct
-  from both easy and hard, and a request that never completed is kept distinct
-  from notation that was read and rejected.
-- Practice instruction selected from the notation, with sources that state what
-  they do and do not support.
-
-## What is not built
-
-Persistence of progress and settings, structural sections, phrase boundaries
-inside a measure, and multi-page analysis. See the limitations section
-of `docs/demo.md`.
-
----
-
-## About this repository's origins
-
-This started as a Claude prompt kit: written project instructions, requirements,
-design guidance, a research foundation, a delivery checklist, and prompts for
-planning, implementation, and debugging. Those documents are still here and are
-still authoritative.
-
-## Use it
-1. Copy this folder's contents into the intended application repository. If that repository already has instructions, merge deliberately instead of overwriting them. Include the hidden .gitignore and .env.example files.
-2. Open that repository in Claude Code and select the intended Opus 5 model and Plan Mode in the interface.
-3. Paste prompts/01-plan.md into Claude. The referenced project files must be present in that repository.
-4. Review the plan's recognition/geometry feasibility and scope. Approve the plan and leave Plan Mode.
-5. Use prompts/02-implement.md if an explicit implementation message is needed. Claude should then continue through the checklist, committing and pushing completed tasks.
-6. Use prompts/03-debug.md with a concrete bug report during debugging.
-
-The authorized GitHub destination is https://github.com/arkyarky4546-ai/HackCMU-Happy-. Claude must verify or configure the remote for this exact repository, including its trailing hyphen. The kit does not create a repository, establish authentication, or grant tool-level permissions. The intended default working branch is practice-map-build. The Git policy does not authorize merging or public site deployment.
-
-## Files and responsibilities
-| File | Purpose |
-|---|---|
-| CLAUDE.md | Persistent engineering, musical, workflow, and Git instructions |
-| docs/product-spec.md | Authoritative product requirements and acceptance criteria |
-| docs/design.md | Layout, color mapping, annotations, and interaction behavior |
-| docs/music-pedagogy.md | Sourced starting techniques and further research requirements |
-| docs/architecture.md | Concrete planning constraints and decisions to resolve |
-| docs/checklist.md | Ordered tasks, completion evidence, blockers, bugs, and handoff |
-| docs/safe-execution.md | Repository preflight, safe checkpoints, validation, and recovery |
-| docs/demo.md | Target demo script, to be updated with observed behavior |
-| prompts/01-plan.md | Initial message for Plan Mode |
-| prompts/02-implement.md | Implementation authorization and execution request |
-| prompts/03-debug.md | Focused debugging message |
-| .gitignore | Secret, upload, dependency, and generated-file exclusions |
-| .env.example | Instructions for documenting actual integration variables after selection |
-
-## Important assumptions
-- Phrase lengths follow musical ideas. Two measures can be a genuine phrase; arbitrary two-measure slicing is not acceptable.
-- Phrase ratings and local measure ratings serve different UI roles.
-- The proposed difficulty category thresholds and color hex values are adjustable product defaults, not validated violin grades.
-- Rubric 3.0 adds double stops (by interval), string crossings, position changes and key remoteness; the string and position features are estimates from pitch alone and are labelled "(estimated)" in the API. Anchors and sources are in `docs/music-pedagogy.md`.
-- Tempo is taken from a metronome mark or `<sound tempo>`; when neither is printed a tempo word (Presto, Andante…) sets an assumed BPM that the score payload discloses (`assumed_tempo_bpm`, `assumed_tempo_reason`) and the retune endpoint can override.
-- An unreadable passage stays unrated rather than receiving a false number.
-- Research notes distinguish evidence from application choices. Additional candidate techniques require research before use.
-
-## Application structure to create after planning
-```text
-src/
-  app/                       # Or the chosen framework's equivalent
-  components/
-  features/
-    upload/
-    score-viewer/
-    segmentation/
-    difficulty/
-    practice/
-  server/
-    recognition/
-    analysis/
-  schemas/
-  content/
-tests/
-  unit/
-  integration/
-  e2e/
-fixtures/
-  README.md                  # Provenance and reviewed expectations
-  scores/                    # Actual matching PDF and MusicXML
-  expected/                  # Reviewed reference analysis
-.github/
-  workflows/
-    ci.yml                   # Actual build/check commands after setup
-```
-
-Do not create fake example scores, expected data, dependency files, or CI commands merely to fill these paths. Create real assets/configuration during their checklist tasks. Keep the chosen package lockfile in Git.
-
-## Development commands
-Python 3.14 (built and tested on CPython 3.14.6). No Node, Java or Docker needed.
+Tests:
 
 ```bash
-pip install -r requirements-dev.txt      # runtime + test dependencies
-python -m playwright install chromium    # once, for the browser tests
-
-python -m uvicorn src.app.main:app --reload   # run the app: http://127.0.0.1:8000
-python -m pytest -q                            # whole suite
-python -m pytest tests/unit tests/integration -q   # fast: no browser needed
-python scripts/refresh_example_analysis.py     # re-derive the example, no key needed
-python scripts/build_example_fixture.py        # re-read the scan (needs credentials)
+python -m playwright install chromium             # once, for the browser tests
+python -m pytest -q                               # everything
+python -m pytest tests/unit tests/integration -q  # skip the browser suite
 ```
 
-There is no build step, no bundler and no type-checker configured: the client is
-plain ES modules served as-is.
+There is no build step: the client is plain ES modules served as-is.
 
 ### Reading scans
-Scan recognition runs locally through **Audiveris 5.11**, which is a Java
-application and so is not covered by `pip install`. The Windows console MSI
-unpacks without administrator rights and carries its own JDK:
+
+Scan recognition runs through **Audiveris 5.11**, a Java application that
+`pip install` does not cover. The Windows console MSI unpacks without
+administrator rights and carries its own JDK:
 
 ```
 msiexec /a Audiveris-5.11.0-windowsConsole-x86_64.msi /qn TARGETDIR=work\audiveris\extracted
 ```
 
 Chordially looks for it at `work/audiveris/extracted/Audiveris/Audiveris.exe`,
-then at `PRACTICEMAP_AUDIVERIS_EXE`, then on `PATH`. When it is absent, a scan
-upload fails with a sentence and a recovery action; MusicXML import and the
-example score still work. Set `PRACTICEMAP_SCAN_ENGINE=vision` to use the
-original Anthropic path instead.
+then at `PRACTICEMAP_AUDIVERIS_EXE`, then on `PATH`. Without it, a scan upload
+fails with a recovery action; MusicXML import and the example score still work.
 
-### Environment variables
-Optional. `PRACTICEMAP_ANTHROPIC_API_KEY` in `.env` (copy `.env.example`) is
-needed only for the legacy vision scan path and for re-reading the example scan
-from source. The app reads only that variable and deliberately ignores an
-ambient `ANTHROPIC_API_KEY`.
+### Configuration
 
-## Why CLAUDE.md is focused
-It contains substantial persistent instructions while detailed specifications live in dedicated documents. Even in a single long session, instructions compete with source files, tool results, and conversation context. Claude Code guidance recommends concise project memory; referenced files are read when relevant, whereas imports load their content at startup.
+Copy `.env.example` to `.env`. Everything is optional.
 
-Official reference: https://code.claude.com/docs/en/memory
+| Variable | Purpose |
+|---|---|
+| `PRACTICEMAP_AUDIVERIS_EXE` | Path to the Audiveris executable |
+| `PRACTICEMAP_SCAN_ENGINE` | `audiveris` (default) or `vision` |
+| `PRACTICEMAP_ANTHROPIC_API_KEY` | Only for the `vision` engine, which sends page sections to Anthropic's API, and for rebuilding the example fixture |
+| `PRACTICEMAP_WORK_DIR` | Where rendered pages and caches go (default `work/`) |
+| `PRACTICEMAP_SYNC_JOBS` | `1` runs analysis inside the upload request (automatic on Vercel) |
+
+## How it's built
+
+- FastAPI and Jinja2 on the server, plain JavaScript in the browser, Pydantic
+  models validating every recognition result at the boundary.
+- Measure geometry is measured, not estimated: OpenCV staff and barline
+  detection on scans, and measure boxes read from Verovio's SVG for MusicXML.
+  Overlays are positioned in page percentages, so they stay aligned through zoom
+  and resize.
+- Timing arithmetic uses exact fractions throughout.
+
+```
+src/app/        web app and templates
+src/features/   segmentation, difficulty, practice, score viewer
+src/server/     recognition adapters and the analysis pipeline
+src/schemas/    validated domain models
+src/content/    practice techniques and their sources
+src/static/     CSS and JavaScript
+tests/          unit, integration and browser tests
+fixtures/       example scores and reference analysis (see fixtures/README.md)
+scripts/        fixture rebuild tools
+```
